@@ -1,0 +1,65 @@
+[
+  {
+    "name": "good first issue",
+    "new_name": ":beverage_box: good first issue :beverage_box:",
+    "color": "7057ff",
+    "default": false,
+    "description": "Good for newcomers"
+  },
+  {
+    "name": "duplicate",
+    "new_name": ":computer_mouse: duplicate :computer_mouse:",
+    "color": "cfd3d7",
+    "default": false,
+    "description": "This issue or pull request already exists"
+  },
+  {
+    "name": "enhancement",
+    "new_name": ":construction: enhancement :construction:",
+    "color": "a2eeef",
+    "default": false,
+    "description": "New feature or request"
+  },
+  {
+    "name": "wontfix",
+    "new_name": ":exclamation: wontfix :exclamation:",
+    "color": "ffffff",
+    "default": false,
+    "description": "This will not be worked on"
+  },
+  {
+    "name": "question",
+    "new_name": ":man_shrugging: question :man_shrugging:",
+    "color": "d876e3",
+    "default": false,
+    "description": "Further information is requested"
+  },
+  {
+    "name": "documentation",
+    "new_name": ":page_facing_up: documentation :page_facing_up:",
+    "color": "0075ca",
+    "default": false,
+    "description": "Improvements or additions to documentation"
+  },
+  {
+    "name": "help wanted",
+    "new_name": ":raising_hand_man: help wanted :raising_hand_man:",
+    "color": "008672",
+    "default": false,
+    "description": "Extra attention is needed"
+  },
+  {
+    "name": "bug",
+    "new_name": ":rotating_light: bug :rotating_light:",
+    "color": "d73a4a",
+    "default": false,
+    "description": "Something isn't working"
+  },
+  {
+    "name": "invalid",
+    "new_name": ":stop_sign: invalid :stop_sign:",
+    "color": "e4e669",
+    "default": false,
+    "description": "This doesn't seem right"
+  }
+]

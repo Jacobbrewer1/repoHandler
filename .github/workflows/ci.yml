@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  # This workflow should only run when there are pushes to the main branches as this displays on the ReadMe.md file
+  # Any deployment integrations should also go in this workflow
+  push:
+    branches:
+      - main
+      - master
+  schedule:
+    - cron: "0 1 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.x
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        # This will install everything in the go.mod file
+        run: go get github.com/Jacobbrewer1/repoHandler
+
+      - name: Run build
+        # This will provide a detailed log output of the new builds that are incomplete
+        #run: go build -v
+        # This will build everything again, log it out and log the working directory
+        run: go build -v -work -o repoHandler.exe
+
+      - name: list
+        run: ls
+
+      - name: run
+        run: ./repoHandler.exe
+        env:
+          GITHUBAPITOKEN: ${{ secrets.GITHUBAPITOKEN }}
