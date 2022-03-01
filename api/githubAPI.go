@@ -43,7 +43,7 @@ func postLabel(path string, l *NewLabel) (json.RawMessage, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.github.com/repos/%v", path), bytes.NewReader(body))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("https://api.github.com/repos/%v", path), bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
