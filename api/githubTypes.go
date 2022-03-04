@@ -330,6 +330,10 @@ type Repository struct {
 	Visibility *string `json:"visibility,omitempty"`
 }
 
+func (r Repository) IsOrganisationsRepo() bool {
+	return *r.Owner.Type == "Organization"
+}
+
 // CodeOfConduct represents a code of conduct.
 type CodeOfConduct struct {
 	Name *string `json:"name,omitempty"`

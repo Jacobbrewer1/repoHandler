@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/Jacobbrewer1/repoHandler/config"
 	"log"
+	"sync"
 )
 
 func init() {
@@ -17,8 +18,8 @@ func main() {
 		log.Println(err)
 		return
 	}
-	if err := handleGithub(); err != nil {
-		log.Println(err)
-		return
-	}
+	var w sync.WaitGroup
+	w.Add(1)
+	go handleGithub(&w)
+	w.Wait()
 }

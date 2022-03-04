@@ -18,6 +18,12 @@ type overrideStruct struct {
 	GithubApiToken *string `json:"GithubApiToken"`
 }
 
+type StructConfig struct {
+	LabelConfig        []*api.NewLabel   `json:"LabelConfig"`
+	AllRepoConfig      *api.Repository   `json:"AllRepoConfig"`
+	RepositoriesConfig []*api.Repository `json:"RepositoriesConfig"`
+}
+
 func ReadConfig() error {
 	if abs, exists := findFile("./config/override.json"); exists {
 		log.Println("Override detected - Reading file")
@@ -43,8 +49,9 @@ func ReadConfig() error {
 		}
 	}
 
-	if abs, exists := findFile("./config/labelConfig.json"); exists {
+	if abs, exists := findFile("./config/config.json"); exists {
 		log.Println("Config detected - Reading file")
+		var config StructConfig
 
 		c, err := ioutil.ReadFile(abs)
 		if err != nil {
@@ -52,12 +59,21 @@ func ReadConfig() error {
 		}
 
 		log.Println(string(c))
-		err = json.Unmarshal(c, &api.ConfiguredLabels)
+		err = json.Unmarshal(c, &config)
 		if err != nil {
 			log.Println(err)
 			return err
 		}
 
+		if config.LabelConfig != nil {
+			api.ConfiguredLabels = config.LabelConfig
+		}
+		if config.AllRepoConfig != nil {
+			api.AllRepoConfig = config.AllRepoConfig
+		}
+		if config.RepositoriesConfig != nil {
+			api.RepositoriesConfig = config.RepositoriesConfig
+		}
 	}
 	return nil
 }

@@ -6,20 +6,63 @@ import (
 	"sync"
 )
 
-func handleGithub() error {
+var (
+	waiter sync.WaitGroup
+)
+
+func handleGithub(w *sync.WaitGroup) {
+	defer w.Done()
 	repos, err := api.GetRepos()
 	if err != nil {
-		return err
+		log.Println(err)
+		return
 	}
-	return labelUpdate(repos)
+	if api.ConfiguredLabels != nil {
+		waiter.Add(1)
+		go labelUpdate(repos)
+	}
+	if api.AllRepoConfig != nil {
+		waiter.Add(1)
+		go allRepoUpdate(repos)
+	}
+	waiter.Wait()
 }
 
-func labelUpdate(repos []api.Repository) error {
+func allRepoUpdate(repos []api.Repository) {
+	defer waiter.Done()
+	var w sync.WaitGroup
+	for _, r := range repos {
+		if r.IsOrganisationsRepo() {
+			continue
+		}
+		w.Add(1)
+		go func(o, n string) {
+			defer w.Done()
+			newRepo, err := api.UpdateRepo(o, n)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			if newRepo.Name == nil {
+				return
+			}
+			log.Printf("repo %v updated", *newRepo.Name)
+		}(*r.Owner.Login, *r.Name)
+	}
+	w.Wait()
+}
+
+func labelUpdate(repos []api.Repository) {
+	defer waiter.Done()
 	var wg sync.WaitGroup
 	for _, r := range repos {
+		if r.IsOrganisationsRepo() {
+			continue
+		}
 		gotLabels, err := api.GetLabels(*r.Owner.Login, *r.Name)
 		if err != nil {
-			return err
+			log.Println(err)
+			continue
 		}
 		for _, l := range gotLabels {
 			run, label := matchLabels(*l.Name, api.ConfiguredLabels)
@@ -40,7 +83,7 @@ func labelUpdate(repos []api.Repository) error {
 			wg.Wait()
 		}
 	}
-	return nil
+	return
 }
 
 func matchLabels(name string, array []*api.NewLabel) (bool, *api.NewLabel) {
