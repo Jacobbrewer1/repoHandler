@@ -36,10 +36,10 @@ func allRepoUpdate(repos []api.Repository) {
 			continue
 		}
 		w.Add(1)
-		go func(o string, repos api.Repository) {
+		go func(owner string, repos api.Repository) {
 			defer w.Done()
-			log.Printf("updating repo %v\n", *repos.FullName)
-			newRepo, err := api.UpdateRepo(o, *repos.Name)
+			log.Printf("%v updating\n", *repos.FullName)
+			newRepo, err := api.UpdateRepo(owner, *repos.Name)
 			if err != nil {
 				log.Println(err)
 				return
@@ -47,7 +47,7 @@ func allRepoUpdate(repos []api.Repository) {
 			if newRepo.Name == nil {
 				return
 			}
-			log.Printf("repo %v updated as per config", *newRepo.FullName)
+			log.Printf("%v : updated to config", *newRepo.FullName)
 		}(*r.Owner.Login, r)
 	}
 	w.Wait()
@@ -73,13 +73,13 @@ func labelUpdate(repos []api.Repository) {
 			wg.Add(1)
 			go func(lName string, l *api.NewLabel, repos api.Repository) {
 				defer wg.Done()
-				log.Printf("updating label %v in %v\n", *l.Name, *r.Name)
+				log.Printf("%v : updating label %v\n", *r.FullName, *l.Name)
 				newLabel, err := api.UpdateLabel(*repos.Name, *repos.Owner.Login, lName, l)
 				if err != nil {
 					log.Println(err)
 					return
 				}
-				log.Printf("repo %v : %v -> %v\n", *repos.FullName, *l.Name, *newLabel.Name)
+				log.Printf("%v : label %v -> %v\n", *repos.FullName, *l.Name, *newLabel.Name)
 			}(*l.Name, label, r)
 		}
 	}
