@@ -46,7 +46,7 @@ func allRepoUpdate(repos []api.Repository) {
 			if newRepo.Name == nil {
 				return
 			}
-			log.Printf("repo %v updated", *newRepo.Name)
+			log.Printf("repo %v updated as per config", *newRepo.Name)
 		}(*r.Owner.Login, *r.Name)
 	}
 	w.Wait()
