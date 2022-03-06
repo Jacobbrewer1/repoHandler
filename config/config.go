@@ -20,6 +20,7 @@ type overrideStruct struct {
 
 type StructConfig struct {
 	LabelConfig        []*api.NewLabel   `json:"LabelConfig"`
+	NewLabels          []*api.Label      `json:"NewLabels"`
 	AllRepoConfig      *api.Repository   `json:"AllRepoConfig"`
 	RepositoriesConfig []*api.Repository `json:"RepositoriesConfig"`
 }
@@ -73,6 +74,9 @@ func ReadConfig() error {
 		}
 		if config.RepositoriesConfig != nil {
 			api.RepositoriesConfig = config.RepositoriesConfig
+		}
+		if config.NewLabels != nil {
+			api.NewLabels = config.NewLabels
 		}
 	}
 	return nil
