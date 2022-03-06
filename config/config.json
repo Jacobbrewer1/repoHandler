@@ -55,6 +55,28 @@
       "description": "This doesn't seem right"
     }
   ],
+  "NewLabels": [
+    {
+      "name": "Priority Critical :rotating_light:",
+      "color": "D2042D",
+      "description": "Issue is a potentially blocker issue"
+    },
+    {
+      "name": "Priority: High :fire_extinguisher:",
+      "color": "DFFF00",
+      "description": "Important and needs to be done or dealt with quickly"
+    },
+    {
+      "name": "Priority: Normal :no_entry:",
+      "color": "0BDA51",
+      "description": "Issues that aren’t critical, and that will be resolved in the long run"
+    },
+    {
+      "name": "Priority: Low :warning:",
+      "color": "0096FF",
+      "description": "This is going to ignored until someone complains or it gets fixed by accident"
+    }
+  ],
   "AllRepoConfig": {
     "delete_branch_on_merge": true
   },

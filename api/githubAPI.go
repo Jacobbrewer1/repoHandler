@@ -15,10 +15,45 @@ var (
 	ConfiguredLabels   []*NewLabel
 	AllRepoConfig      *Repository
 	RepositoriesConfig []*Repository
+	NewLabels          []*Label
 )
 
+func AddNewLabels(l Label, repo Repository) (Label, error) {
+	rawJson, err := postNewLabel(fmt.Sprintf("repos/%v/labels", *repo.FullName), l)
+	if err != nil {
+		return Label{}, err
+	}
+	return decodeNewLabel(rawJson)
+}
+
+func decodeNewLabel(rawJson json.RawMessage) (Label, error) {
+	var l Label
+	err := json.Unmarshal(rawJson, &l)
+	return l, err
+}
+
+func postNewLabel(endpoint string, l Label) (json.RawMessage, error) {
+	r, err := json.Marshal(l)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("https://api.github.com/%v", endpoint), bytes.NewReader(r))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("token %v", GithubApiToken))
+	req.Header.Set("accept", "application/vnd.github.v3+json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
+}
+
 func UpdateRepo(owner, repo string) (Repository, error) {
-	rawJson, err := postRepoUpdate(fmt.Sprintf("repos/%v/%v", owner, repo))
+	rawJson, err := patchRepoUpdate(fmt.Sprintf("repos/%v/%v", owner, repo))
 	if err != nil {
 		return Repository{ID: nil}, err
 	}
@@ -31,7 +66,7 @@ func decodeUpdatedRepo(rawJson json.RawMessage) (Repository, error) {
 	return r, err
 }
 
-func postRepoUpdate(endpoint string) (json.RawMessage, error) {
+func patchRepoUpdate(endpoint string) (json.RawMessage, error) {
 	r, err := json.Marshal(AllRepoConfig)
 	if err != nil {
 		return nil, err

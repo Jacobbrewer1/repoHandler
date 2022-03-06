@@ -25,7 +25,57 @@ func handleGithub(w *sync.WaitGroup) {
 		waiter.Add(1)
 		go allRepoUpdate(repos)
 	}
+	if api.NewLabels != nil {
+		waiter.Add(1)
+		go addNewLabels(repos)
+	}
 	waiter.Wait()
+}
+
+func addNewLabels(repos []api.Repository) {
+	defer waiter.Done()
+	var w sync.WaitGroup
+	for _, r := range repos {
+		if r.IsOrganisationsRepo() {
+			continue
+		}
+		gotLabels, err := api.GetLabels(*r.Owner.Login, *r.Name)
+		if err != nil {
+			log.Println(err)
+		}
+		for _, l := range api.NewLabels {
+			w.Add(1)
+			go func(label *api.Label, repo api.Repository, existingLabels []api.Label) {
+				defer w.Done()
+				if checkLabel(existingLabels, *label.Name, *repo.FullName) {
+					return
+				}
+				log.Printf("creating label %v in repo %v\n", *label.Name, *repo.FullName)
+				newLabel, err := api.AddNewLabels(*label, repo)
+				if err != nil {
+					log.Println(err)
+					return
+				}
+				if newLabel.Name == nil {
+					return
+				}
+				log.Printf("label %v created in %v\n", *newLabel.Name, *repo.FullName)
+			}(l, r, gotLabels)
+		}
+	}
+	w.Wait()
+}
+
+func checkLabel(existingLabel []api.Label, newLabel, repo string) bool {
+	log.Println("checking if label is already in repo")
+	for _, l := range existingLabel {
+		if *l.Name == newLabel {
+			log.Printf("label %v exists in %v\n", *l.Name, repo)
+			return true
+		}
+	}
+	log.Printf("label %v does not exist in %v\n", newLabel, repo)
+	return false
 }
 
 func allRepoUpdate(repos []api.Repository) {
