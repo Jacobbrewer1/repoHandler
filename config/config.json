@@ -81,7 +81,6 @@
       "color": "0096FF",
       "description": "This is going to ignored until someone complains or it gets fixed by accident"
     }
-    
   ],
   "AllRepoConfig": {
     "delete_branch_on_merge": true
